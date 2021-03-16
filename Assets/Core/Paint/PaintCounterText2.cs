@@ -1,14 +1,15 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using AtaCetin;
 
 namespace PaintIn3D.Examples
 {
 	/// <summary>This component allows you to output the totals of all the specified pixel counters to a UI Text component.</summary>
 	[RequireComponent(typeof(Text))]
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dChannelCounterText")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Examples/Channel Counter Text")]
-	public class P3dChannelCounterText : MonoBehaviour
+	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dChannelCounterText2")]
+	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Examples/Channel Counter Text 2")]
+	public class PaintCounterText2 : MonoBehaviour
 	{
 		public enum ChannelType
 		{
@@ -40,6 +41,11 @@ namespace PaintIn3D.Examples
 		[System.NonSerialized]
 		private Text cachedText;
 		
+		private GameManager _gameManager;
+		private void Awake()
+		{
+			_gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+		}
 
 		protected virtual void OnEnable()
 		{
@@ -73,6 +79,9 @@ namespace PaintIn3D.Examples
 			final = final.Replace("{PERCENT}", percent.ToString());
 
 			cachedText.text = final;
+			
+			if(percent>=70&&_gameManager.GetActiveState()!=2)
+				_gameManager.SetState(2);
 		}
 	}
 }
