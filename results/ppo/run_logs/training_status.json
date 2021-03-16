@@ -1,0 +1,23 @@
+{
+    "Enemy": {
+        "checkpoints": [
+            {
+                "steps": 38744,
+                "file_path": "results\\ppo\\Enemy\\Enemy-38744.onnx",
+                "reward": -0.33665835411471323,
+                "creation_time": 1615912623.1462054
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 38744,
+            "file_path": "results\\ppo\\Enemy.onnx",
+            "reward": -0.33665835411471323,
+            "creation_time": 1615912623.1462054
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.2.0",
+        "mlagents_version": "0.24.1",
+        "torch_version": "1.7.1+cu110"
+    }
+}

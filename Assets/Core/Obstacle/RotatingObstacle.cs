@@ -26,9 +26,14 @@ public class RotatingObstacle : MonoBehaviour
     void OnCollisionEnter(Collision cllsn)
     {
         //Oyuncuyu tag inden bul
-        GameObject character = GameObject.FindGameObjectWithTag("Player");
-        //birlikte hareket etmek icin karakterin transformuna parrent ekle
-        character.transform.SetParent(this.transform);
+        //GameObject character = GameObject.FindGameObjectWithTag("Player");
+
+        if (cllsn.collider.tag == "Player")
+        {
+            //birlikte hareket etmek icin karakterin transformuna parrent ekle
+            cllsn.collider.transform.SetParent(this.transform);
+        }
+       
     }
     //artık degmiyorsa 
     void OnCollisionExit(Collision other)
