@@ -27,7 +27,6 @@ namespace AtaCetin
         {
             anim = GetComponentInChildren<Animator>();
             rigidBody = GetComponent<Rigidbody>();
-            rigidBody = GetComponent<Rigidbody>();
         }
 
         public void SetMovement(bool var)
