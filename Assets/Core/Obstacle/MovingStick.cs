@@ -8,7 +8,8 @@ public class MovingStick : MonoBehaviour
     [SerializeField] private string AnimName ="HalfDonut";
     [SerializeField] private float Time = 2f;
     [SerializeField] private float repeatRate = 2f;
-    void Start()
+
+    private void Start()
     {
         anim = GetComponent<Animator>();
         //2sn de bir tekrarı tetikle
@@ -16,11 +17,11 @@ public class MovingStick : MonoBehaviour
     }
     
     //Cubuğu hareket ettir
-    void Move()
+    private void Move()
     {
         //anımator null gelmişmi bir doğrulama
         if (anim != null)
             //Base Layer daki Animasyon stateini oynat
-        anim.Play("Base Layer." + AnimName, 0, 0);
+            anim.Play("Base Layer." + AnimName, 0, 0);
     }
 }

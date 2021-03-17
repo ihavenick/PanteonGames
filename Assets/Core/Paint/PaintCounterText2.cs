@@ -1,111 +1,159 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using System;
 using System.Collections.Generic;
 using AtaCetin;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace PaintIn3D.Examples
 {
-	/// <summary>This component allows you to output the totals of all the specified pixel counters to a UI Text component.</summary>
-	[RequireComponent(typeof(Text))]
-	[HelpURL(P3dHelper.HelpUrlPrefix + "P3dChannelCounterText2")]
-	[AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Examples/Channel Counter Text 2")]
-	public class PaintCounterText2 : MonoBehaviour
-	{
-		public enum ChannelType
-		{
-			Red,
-			Green,
-			Blue,
-			Alpha
-		}
+    //
+    //   Eklentinin örneklerinden çaldım.
+    //   
+    //   Kendi GameManager classımı cağırarak %70 e ulaştıgında 
+    //
+    //   State i en son state(3) yani 2 ye değiştir dedim. 
+    //
+    /// <summary>This component allows you to output the totals of all the specified pixel counters to a UI Text component.</summary>
+    [RequireComponent(typeof(Text))]
+    [HelpURL(P3dHelper.HelpUrlPrefix + "P3dChannelCounterText2")]
+    [AddComponentMenu(P3dHelper.ComponentMenuPrefix + "Examples/Channel Counter Text 2")]
+    public class PaintCounterText2 : MonoBehaviour
+    {
+        public enum ChannelType
+        {
+            Red,
+            Green,
+            Blue,
+            Alpha
+        }
 
-		/// <summary>This allows you to specify the counters that will be used.
-		/// Zero = All active and enabled counters in the scene.</summary>
-		public List<P3dChannelCounter> Counters { get { if (counters == null) counters = new List<P3dChannelCounter>(); return counters; } } [SerializeField] private List<P3dChannelCounter> counters;
+        [SerializeField] private List<P3dChannelCounter> counters;
+        [SerializeField] private ChannelType channel;
+        [SerializeField] private bool inverse;
+        [SerializeField] private int decimalPlaces;
+        [Multiline] [SerializeField] private string format = "{PERCENT}";
 
-		/// <summary>This allows you to choose which channel will be output to the UI Text.</summary>
-		public ChannelType Channel { set { channel = value; } get { return channel; } } [SerializeField] private ChannelType channel;
+        private GameManager _gameManager;
 
-		/// <summary>Inverse the <b>Count</b> and <b>Percent</b> values?</summary>
-		public bool Inverse { set { inverse = value; } get { return inverse; } } [SerializeField] private bool inverse;
+        [NonSerialized] private Text cachedText;
 
-		/// <summary>This allows you to set the amount of decimal places when using the percentage output.</summary>
-		public int DecimalPlaces { set { decimalPlaces = value; } get { return decimalPlaces; } } [SerializeField] private int decimalPlaces;
+        /// <summary>
+        ///     This allows you to specify the counters that will be used.
+        ///     Zero = All active and enabled counters in the scene.
+        /// </summary>
+        public List<P3dChannelCounter> Counters
+        {
+            get
+            {
+                if (counters == null) counters = new List<P3dChannelCounter>();
+                return counters;
+            }
+        }
 
-		/// <summary>This allows you to set the format of the team text. You can use the following tokens:
-		/// {TOTAL} = Total amount of pixels that can be painted.
-		/// {COUNT} = Total amount of pixel that have been painted.
-		/// {PERCENT} = Percentage of pixels that have been painted.</summary>
-		public string Format { set { format = value; } get { return format; } } [Multiline] [SerializeField] private string format = "{PERCENT}";
+        /// <summary>This allows you to choose which channel will be output to the UI Text.</summary>
+        public ChannelType Channel
+        {
+            set => channel = value;
+            get => channel;
+        }
 
-		[System.NonSerialized]
-		private Text cachedText;
-		
-		private GameManager _gameManager;
-		private void Awake()
-		{
-			_gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-		}
+        /// <summary>Inverse the <b>Count</b> and <b>Percent</b> values?</summary>
+        public bool Inverse
+        {
+            set => inverse = value;
+            get => inverse;
+        }
 
-		protected virtual void OnEnable()
-		{
-			cachedText = GetComponent<Text>();
-		}
+        /// <summary>This allows you to set the amount of decimal places when using the percentage output.</summary>
+        public int DecimalPlaces
+        {
+            set => decimalPlaces = value;
+            get => decimalPlaces;
+        }
 
-		protected virtual void Update()
-		{
-			var finalCounters = counters.Count > 0 ? counters : null;
-			var total         = P3dChannelCounter.GetTotal(finalCounters);
-			var count         = default(long);
+        /// <summary>
+        ///     This allows you to set the format of the team text. You can use the following tokens:
+        ///     {TOTAL} = Total amount of pixels that can be painted.
+        ///     {COUNT} = Total amount of pixel that have been painted.
+        ///     {PERCENT} = Percentage of pixels that have been painted.
+        /// </summary>
+        public string Format
+        {
+            set => format = value;
+            get => format;
+        }
 
-			switch (channel)
-			{
-				case ChannelType.Red:   count = P3dChannelCounter.GetCountR(finalCounters); break;
-				case ChannelType.Green: count = P3dChannelCounter.GetCountG(finalCounters); break;
-				case ChannelType.Blue:  count = P3dChannelCounter.GetCountB(finalCounters); break;
-				case ChannelType.Alpha: count = P3dChannelCounter.GetCountA(finalCounters); break;
-			}
+        private void Awake()
+        {
+            _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        }
 
-			if (inverse == true)
-			{
-				count = total - count;
-			}
+        protected virtual void Update()
+        {
+            var finalCounters = counters.Count > 0 ? counters : null;
+            var total = P3dChannelCounter.GetTotal(finalCounters);
+            var count = default(long);
 
-			var final   = format;
-			var percent = P3dHelper.RatioToPercentage(P3dHelper.Divide(count, total), decimalPlaces);
+            switch (channel)
+            {
+                case ChannelType.Red:
+                    count = P3dChannelCounter.GetCountR(finalCounters);
+                    break;
+                case ChannelType.Green:
+                    count = P3dChannelCounter.GetCountG(finalCounters);
+                    break;
+                case ChannelType.Blue:
+                    count = P3dChannelCounter.GetCountB(finalCounters);
+                    break;
+                case ChannelType.Alpha:
+                    count = P3dChannelCounter.GetCountA(finalCounters);
+                    break;
+            }
 
-			final = final.Replace("{TOTAL}", total.ToString());
-			final = final.Replace("{COUNT}", count.ToString());
-			final = final.Replace("{PERCENT}", percent.ToString());
+            if (inverse) count = total - count;
 
-			cachedText.text = final;
-			
-			if(percent>=70&&_gameManager.GetActiveState()!=2)
-				_gameManager.SetState(2);
-		}
-	}
+            var final = format;
+            var percent = P3dHelper.RatioToPercentage(P3dHelper.Divide(count, total), decimalPlaces);
+
+            final = final.Replace("{TOTAL}", total.ToString());
+            final = final.Replace("{COUNT}", count.ToString());
+            final = final.Replace("{PERCENT}", percent.ToString());
+
+            cachedText.text = final;
+
+            if (percent >= 70 && _gameManager.GetActiveState() != 2)
+                _gameManager.SetState(2);
+        }
+
+        protected virtual void OnEnable()
+        {
+            cachedText = GetComponent<Text>();
+        }
+    }
 }
 
 #if UNITY_EDITOR
 namespace PaintIn3D.Examples
 {
-	using UnityEditor;
+    [CanEditMultipleObjects]
+    [CustomEditor(typeof(P3dChannelCounterText))]
+    public class P3dChannelCounterText_Editor : P3dEditor<P3dChannelCounterText>
+    {
+        protected override void OnInspector()
+        {
+            Draw("counters",
+                "This allows you to specify the counters that will be used.\n\nZero = All active and enabled counters in the scene.");
 
-	[CanEditMultipleObjects]
-	[CustomEditor(typeof(P3dChannelCounterText))]
-	public class P3dChannelCounterText_Editor : P3dEditor<P3dChannelCounterText>
-	{
-		protected override void OnInspector()
-		{
-			Draw("counters", "This allows you to specify the counters that will be used.\n\nZero = All active and enabled counters in the scene.");
+            Separator();
 
-			Separator();
-
-			Draw("channel", "This allows you to choose which channel will be output to the UI Text.");
-			Draw("inverse", "Inverse the Count and Percent values?");
-			Draw("decimalPlaces", "This allows you to set the amount of decimal places when using the percentage output.");
-			Draw("format", "This allows you to set the format of the team text. You can use the following tokens:\n\n{TOTAL} = Total amount of pixels that can be painted.\n\n{COUNT} = Total amount of pixel that have been painted.\n\n{PERCENT} = Percentage of pixels that have been painted.");
-		}
-	}
+            Draw("channel", "This allows you to choose which channel will be output to the UI Text.");
+            Draw("inverse", "Inverse the Count and Percent values?");
+            Draw("decimalPlaces",
+                "This allows you to set the amount of decimal places when using the percentage output.");
+            Draw("format",
+                "This allows you to set the format of the team text. You can use the following tokens:\n\n{TOTAL} = Total amount of pixels that can be painted.\n\n{COUNT} = Total amount of pixel that have been painted.\n\n{PERCENT} = Percentage of pixels that have been painted.");
+        }
+    }
 }
 #endif

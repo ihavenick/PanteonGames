@@ -1,38 +1,24 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace AtaCetin
 {
     public class PlayerController : MonoBehaviour
     {
-
-        Animator anim;
-        private PlayerInputSystem _playerInputSystem;
         [SerializeField] private float swerveSpeed = 0.5f;
         [SerializeField] private float maxSwerveAmount = 1f;
 
         [SerializeField] private float rotatingStickForceAmount = 10f;
         [SerializeField] private float moveSpeed = 10f;
 
-        private GameObject TargetPoint;
-        private GameManager _gameManager;
-        private Rigidbody rigidBody;
-
-        private bool bMovementEnabled = true;
-
         [SerializeField] private GameObject spawnPoint;
+        private GameManager _gameManager;
+        private PlayerInputSystem _playerInputSystem;
+        private Animator _anim;
 
-        private void Start()
-        {
-            anim = GetComponentInChildren<Animator>();
-            rigidBody = GetComponent<Rigidbody>();
-        }
+        private bool _bMovementEnabled = true;
+        private Rigidbody _rigidBody;
 
-        public void SetMovement(bool var)
-        {
-            bMovementEnabled = var;
-        }
+        private GameObject _targetPoint;
 
         private void Awake()
         {
@@ -40,68 +26,41 @@ namespace AtaCetin
             _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         }
 
-        public void SetPlayerLocation(Vector3 location) => this.transform.position = location;
-
-
-        public void SetSpawnPoint(GameObject SpawnPoint)
+        private void Start()
         {
-            spawnPoint = SpawnPoint;
-        }
-
-        private void Respawn()
-        {
-            //todo stage check
-            rigidBody.velocity = Vector3.zero;
-            rigidBody.angularVelocity = Vector3.zero;
-            if (spawnPoint == null) spawnPoint = _gameManager.GetSpawnPoint();
-            transform.position = spawnPoint.transform.position;
-
+            _anim = GetComponentInChildren<Animator>();
+            _rigidBody = GetComponent<Rigidbody>();
         }
 
         private void Update()
         {
-            if (bMovementEnabled)
-            {
-                rigidBody.WakeUp();
-                if (this.transform.position.y < -10)
-                    Respawn();
+            if (!_bMovementEnabled) return;
+            _rigidBody.WakeUp();
+            if (transform.position.y < -10) Respawn();
 
-                float yurumeHizi = 0;
+            float yurumeHizi = 0;
 
-                //ekrana dokunuyorsa yürü
-                if (_playerInputSystem.GetScreenTouching)
-                    yurumeHizi = moveSpeed;
+            //ekrana dokunuyorsa yürü
+            if (_playerInputSystem.GetScreenTouching)
+                yurumeHizi = moveSpeed;
 
-                float swerveAmount = Time.deltaTime * swerveSpeed * _playerInputSystem.MoveFactorX;
+            var swerveAmount = Time.deltaTime * swerveSpeed * _playerInputSystem.MoveFactorX;
 
-                swerveAmount = Mathf.Clamp(swerveAmount, -maxSwerveAmount, maxSwerveAmount);
+            swerveAmount = Mathf.Clamp(swerveAmount, -maxSwerveAmount, maxSwerveAmount);
 
-                transform.Translate(swerveAmount, 0, yurumeHizi * Time.deltaTime);
-            }
-            else
-            {
-
-            }
-
-
+            transform.Translate(swerveAmount, 0, yurumeHizi * Time.deltaTime);
         }
 
 
         private void LateUpdate()
         {
-            if (_playerInputSystem.GetScreenTouching && bMovementEnabled)
-                anim.SetBool("moving", true);
+            if (_playerInputSystem.GetScreenTouching && _bMovementEnabled)
+                _anim.SetBool("moving", true);
             else
-                anim.SetBool("moving", false);
+                _anim.SetBool("moving", false);
         }
 
-        public void LerpCamera(float lerpTime)
-        {
-            transform.Find("CameraBoy").position = Vector3.Lerp(this.transform.Find("CameraBoy").position,
-                this.transform.Find("TargetEye").position, lerpTime);
-        }
-
-        void OnCollisionEnter(Collision cllsn)
+        private void OnCollisionEnter(Collision cllsn)
         {
             //neyle çarpıştı
             switch (cllsn.gameObject.tag)
@@ -112,16 +71,53 @@ namespace AtaCetin
                     break;
                 case "rotatingStick":
                     //eğer dönen cubuksa güç uygula
-                    rigidBody.AddForce(cllsn.contacts[0].normal.x * rotatingStickForceAmount, 0,
+                    _rigidBody.AddForce(cllsn.contacts[0].normal.x * rotatingStickForceAmount, 0,
                         cllsn.contacts[0].normal.z * rotatingStickForceAmount, ForceMode.Impulse);
                     break;
                 case "switchState":
-                    _gameManager.SetState(1);
-                    break;
-                default:
+                    if(_gameManager.GetActiveState() < 1)
+                        _gameManager.SetState(1);
+                    else
+                        Finish();
+                    
                     break;
             }
+        }
 
+        private void Finish()
+        {
+           //  TODO bitince ekran göster
+        }
+        
+        
+        public void SetMovement(bool var)
+        {
+            _bMovementEnabled = var;
+        }
+
+        public void SetPlayerLocation(Vector3 location)
+        {
+            transform.position = location;
+        }
+
+
+        public void SetSpawnPoint(GameObject spawnPoint)
+        {
+            this.spawnPoint = spawnPoint;
+        }
+
+        private void Respawn()
+        {
+            _rigidBody.velocity = Vector3.zero;
+            _rigidBody.angularVelocity = Vector3.zero;
+            if (spawnPoint == null) spawnPoint = _gameManager.GetSpawnPoint();
+            transform.position = spawnPoint.transform.position;
+        }
+
+        public void LerpCamera(float lerpTime, bool toTargetEye)
+        {
+            transform.Find("CameraBoy").localPosition = Vector3.Lerp(transform.Find("CameraBoy").localPosition,
+                toTargetEye ? transform.Find("TargetEye").localPosition : new Vector3(0, 10.12f, -10.71f), lerpTime);
         }
     }
 }

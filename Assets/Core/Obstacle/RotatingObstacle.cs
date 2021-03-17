@@ -27,7 +27,7 @@ public class RotatingObstacle : MonoBehaviour
     void OnCollisionEnter(Collision cllsn)
     {
         //Oyuncuyu tag inden bul
-        if (cllsn.collider.tag == "Player")
+        if (cllsn.collider.CompareTag("Player"))
         {
             //birlikte hareket etmek icin karakterin transformuna parrent ekle
             cllsn.collider.transform.SetParent(this.transform);
@@ -38,7 +38,7 @@ public class RotatingObstacle : MonoBehaviour
     void OnCollisionExit(Collision cllsn)
     {
         //Oyuncuyu tag inden bul
-        if (cllsn.collider.tag == "Player")
+        if (cllsn.collider.CompareTag("Player"))
         {
             //ayrılırsa parenttan cıkar ve rotasyonu sıfırla
             cllsn.transform.parent = null;

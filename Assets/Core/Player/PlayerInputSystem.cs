@@ -7,33 +7,30 @@ namespace AtaCetin
     public class PlayerInputSystem : MonoBehaviour
     {
         private float _lastFrameFingerPositionX;
-        private float _moveFactorX;
 
-        private bool _isTouchingScreen;
+        public bool GetScreenTouching { get; private set; }
 
-        public bool GetScreenTouching => _isTouchingScreen;
-
-        public float MoveFactorX => _moveFactorX;
+        public float MoveFactorX { get; private set; }
 
         private void Update()
         {
             if (Input.touchCount > 0)
-                _isTouchingScreen = true;
+                GetScreenTouching = true;
 
             if (Input.GetMouseButtonDown(0))
             {
-                _isTouchingScreen = true;
+                GetScreenTouching = true;
                 _lastFrameFingerPositionX = Input.mousePosition.x;
             }
             else if (Input.GetMouseButton(0))
             {
-                _moveFactorX = Input.mousePosition.x - _lastFrameFingerPositionX;
+                MoveFactorX = Input.mousePosition.x - _lastFrameFingerPositionX;
                 _lastFrameFingerPositionX = Input.mousePosition.x;
             }
             else if (Input.GetMouseButtonUp(0))
             {
-                _isTouchingScreen = false;
-                _moveFactorX = 0f;
+                GetScreenTouching = false;
+                MoveFactorX = 0f;
             }
         }
     }

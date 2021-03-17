@@ -9,6 +9,8 @@ TagManager:
   - rotatingPlatform
   - switchState
   - checkpoint
+  - Enemies
+  - canvas
   layers:
   - Default
   - TransparentFX
