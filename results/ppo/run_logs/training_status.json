@@ -2,41 +2,23 @@
     "Enemy": {
         "checkpoints": [
             {
-                "steps": 378410,
-                "file_path": "results\\ppo\\Enemy\\Enemy-378410.onnx",
-                "reward": 33.2,
-                "creation_time": 1615990450.1192477
+                "steps": 499982,
+                "file_path": "results\\ppo\\Enemy\\Enemy-499982.onnx",
+                "reward": 20.571428571428573,
+                "creation_time": 1616006957.0897548
             },
             {
-                "steps": 396992,
-                "file_path": "results\\ppo\\Enemy\\Enemy-396992.onnx",
-                "reward": 28.775,
-                "creation_time": 1615990893.5307164
-            },
-            {
-                "steps": 471679,
-                "file_path": "results\\ppo\\Enemy\\Enemy-471679.onnx",
-                "reward": 38.0,
-                "creation_time": 1615991727.7044795
-            },
-            {
-                "steps": 499937,
-                "file_path": "results\\ppo\\Enemy\\Enemy-499937.onnx",
-                "reward": 40.12,
-                "creation_time": 1615992034.3164
-            },
-            {
-                "steps": 500001,
-                "file_path": "results\\ppo\\Enemy\\Enemy-500001.onnx",
-                "reward": 40.12,
-                "creation_time": 1615992034.5078878
+                "steps": 500302,
+                "file_path": "results\\ppo\\Enemy\\Enemy-500302.onnx",
+                "reward": 20.571428571428573,
+                "creation_time": 1616006957.2827451
             }
         ],
         "final_checkpoint": {
-            "steps": 500001,
+            "steps": 500302,
             "file_path": "results\\ppo\\Enemy.onnx",
-            "reward": 40.12,
-            "creation_time": 1615992034.5078878
+            "reward": 20.571428571428573,
+            "creation_time": 1616006957.2827451
         }
     },
     "metadata": {

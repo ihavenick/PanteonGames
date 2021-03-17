@@ -18,6 +18,7 @@ namespace AtaCetin
         private bool _bMovementEnabled = true;
         private Rigidbody _rigidBody;
 
+        [SerializeField] private GameObject _finishedText;
         private GameObject _targetPoint;
 
         private void Awake()
@@ -87,6 +88,8 @@ namespace AtaCetin
         private void Finish()
         {
            //  TODO bitince ekran göster
+           _bMovementEnabled = false;
+            _finishedText.SetActive(true);
         }
         
         

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace AtaCetin
 {
@@ -9,16 +10,25 @@ namespace AtaCetin
         private PlayerController _playerController;
         private GameObject _spawnPoint;
         private StateManager _stateManager;
-        private GameObject _canvas;
+        [SerializeField] private GameObject _canvas;
+        [SerializeField] public GameObject enemyPrefab;
 
         private bool _lerpToSpawn;
         private float _lerpValue;
         private bool toTargetEye = true;
+        private GameObject player;
+        public Text currentRankingList;
+        private bool showRankings = false;
+
+        private List<GameObject> participantList;
 
         private void Start()
         {
-            _playerController = GameObject.FindWithTag("Player").GetComponent<PlayerController>();
-            _canvas = GameObject.Find("Canvas");
+            participantList = new List<GameObject>();
+            player = GameObject.FindWithTag("Player");
+            participantList.Add(player);
+            _playerController = player.GetComponent<PlayerController>();
+            _canvas = GameObject.Find("Filled Pie");
 
             Debug.Log("GameManager Init");
             _stateManager = new StateManager();
@@ -33,7 +43,7 @@ namespace AtaCetin
         {
             if (_lerpToSpawn)
             {
-                _lerpValue += Time.deltaTime / 2;
+                _lerpValue += Time.deltaTime / 0.5f;
                 var playerPosition = _playerController.transform.position;
                 var newPosition = _spawnPoint.transform.position;
                 if (playerPosition == newPosition)
@@ -47,6 +57,12 @@ namespace AtaCetin
             else
             {
                 _lerpValue = 0;
+            }
+
+            if (showRankings)
+            {
+                participantList.Sort((x,y) => x.transform.position.z.CompareTo(y.transform.position.z));
+                currentRankingList.text = 10 - participantList.IndexOf(player) + ".ci sıra";
             }
         }
 
@@ -63,6 +79,7 @@ namespace AtaCetin
                     _canvas.SetActive(false);
                     _playerController.SetMovement(true);
                     _spawnPoint = GameObject.Find("Spawn01");
+                    currentRankingList.text = "2. bölüme geçmek için parkuru bitir";
                     _playerController.SetSpawnPoint(_spawnPoint);
                     break;
                 case 1:
@@ -71,6 +88,7 @@ namespace AtaCetin
                     _playerController.SetSpawnPoint(_spawnPoint);
                     _stateManager.SetActiveState(1);
                     _lerpToSpawn = true;
+                    currentRankingList.text = "Bölümü geçmek için %70 boyayın";
                     _canvas.SetActive(true);
                     break;
                 case 2:
@@ -81,7 +99,14 @@ namespace AtaCetin
                     _playerController.SetMovement(true);
                     toTargetEye = false;
                     _lerpToSpawn = true;
+                    showRankings = true;
+                    for (int i = 0; i < 9; i++)
+                    {
+                        var a = Instantiate(enemyPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+                        participantList.Add(a);
+                    }
                     break;
+                
                 default:
                     _stateManager.SetActiveState(0);
                     break;
